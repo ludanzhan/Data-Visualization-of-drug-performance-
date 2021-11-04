@@ -38,6 +38,39 @@ Using the _aggregation method_, produce the same summary statistics in a single 
 tumor_df = new_df.groupby('Drug Regimen')
 tumor_df.agg({"Tumor Volume (mm3)" : ['mean','median','var','std','sem']})
 ```
+### Quartiles, Outliers and Boxplots
+Calculate the final tumor volume of each mouse across four of the most promising treatment regimens: Capomulin, Ramicane, Infubinol, and Ceftamin. Using _for loop_ to calculate the quartiles and IQR and quantitatively determine if there are any potential outliers across all four treatment regimens.
+
+```python
+# Put treatments into a list for for loop (and later for plot labels)
+treatments = ['Capomulin','Ramicane','Infubinol','Ceftamin']
+
+# Create empty list to fill with tumor vol data (for plotting)
+tumorVol = []
+
+# Calculate the IQR and quantitatively determine if there are any potential outliers. 
+# Locate the rows which contain mice on each drug and get the tumor volumes
+for treatment in treatments:
+    drug_seperate = drug_merge[drug_merge["Drug Regimen"] == treatment]
+    tumor_seperate = drug_seperate["Tumor Volume (mm3)"]
+    tumorVol.append(tumor_seperate)
+    
+    # add subset 
+    quantile = tumor_seperate.quantile([.25,.5,.75])
+    lowerq = quantile[0.25]
+    upperq = quantile[0.75]
+    iqr = upperq-lowerq
+
+    # Determine outliers using upper and lower bounds
+    lower_bound = lowerq - (1.5*iqr)
+    upper_bound = upperq + (1.5*iqr)
+```
+* Generate a box plot of the final tumor volume of each mouse across four regimens of interest
+![image](https://github.com/ludanzhan/Matplotlib-Challenge/blob/main/Images/boxplot.png)
+
+* Generate a line plot of tumor volume vs. time point for a mouse treated with Capomulin
+![image](https://github.com/ludanzhan/Matplotlib-Challenge/blob/main/Images/scatterplot.png)
+
 ### Graphic Summary
 Generate a bar plot and pie chart using both Pandas's _DataFrame.plot()_ and _Matplotlib's pyplot_ that shows the total number of timepoints for all mice tested for each drug regimen throughout the course of the study.
 *  **Bar plot** using Pandas's _DataFrame.plot()_
@@ -87,3 +120,4 @@ Generate a bar plot and pie chart using both Pandas's _DataFrame.plot()_ and _Ma
     plt.axis("equal")
     plt.show()
   ```
+
